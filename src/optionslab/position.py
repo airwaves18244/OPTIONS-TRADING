@@ -35,7 +35,18 @@ class OptionLeg:
     multiplier: int = 100
 
     def __post_init__(self) -> None:
-        raise NotImplementedError
+        if self.kind not in ("call", "put"):
+            raise ValueError(f"kind must be 'call' or 'put', got {self.kind!r}")
+        if self.strike <= 0:
+            raise ValueError("strike must be > 0")
+        if self.expiry <= 0:
+            raise ValueError("expiry must be > 0 (years)")
+        if self.quantity == 0:
+            raise ValueError("quantity must be nonzero")
+        if self.premium < 0:
+            raise ValueError("premium must be >= 0")
+        if self.multiplier <= 0:
+            raise ValueError("multiplier must be > 0")
 
     @property
     def entry_cash_flow(self) -> float:
@@ -43,11 +54,13 @@ class OptionLeg:
 
         ``premium * quantity * multiplier``.
         """
-        raise NotImplementedError
+        return self.premium * self.quantity * self.multiplier
 
     def intrinsic(self, spot: float) -> float:
         """Intrinsic value per share at ``spot``: max(S-K, 0) for calls, max(K-S, 0) for puts."""
-        raise NotImplementedError
+        if self.kind == "call":
+            return max(spot - self.strike, 0.0)
+        return max(self.strike - spot, 0.0)
 
 
 @dataclass(frozen=True)
@@ -58,12 +71,15 @@ class StockLeg:
     entry_price: float
 
     def __post_init__(self) -> None:
-        raise NotImplementedError
+        if self.quantity == 0:
+            raise ValueError("quantity must be nonzero")
+        if self.entry_price <= 0:
+            raise ValueError("entry_price must be > 0")
 
     @property
     def entry_cash_flow(self) -> float:
         """Dollars paid at entry: ``entry_price * quantity``."""
-        raise NotImplementedError
+        return self.entry_price * self.quantity
 
 
 Leg = Union[OptionLeg, StockLeg]
@@ -83,30 +99,59 @@ class Position:
     label: str = ""
 
     def __post_init__(self) -> None:
-        raise NotImplementedError
+        legs = tuple(self.legs)
+        if len(legs) == 0:
+            raise ValueError("Position must have at least one leg")
+        object.__setattr__(self, "legs", legs)
 
     def __iter__(self) -> Iterator[Leg]:
-        raise NotImplementedError
+        return iter(self.legs)
 
     @property
     def option_legs(self) -> tuple[OptionLeg, ...]:
         """Only the option legs, in order."""
-        raise NotImplementedError
+        return tuple(leg for leg in self.legs if isinstance(leg, OptionLeg))
 
     @property
     def stock_legs(self) -> tuple[StockLeg, ...]:
         """Only the stock legs, in order."""
-        raise NotImplementedError
+        return tuple(leg for leg in self.legs if isinstance(leg, StockLeg))
 
     def net_premium(self) -> float:
         """Total entry cash flow in dollars: positive = net debit, negative = net credit."""
-        raise NotImplementedError
+        return sum(leg.entry_cash_flow for leg in self.legs)
 
     @property
     def earliest_expiry(self) -> float:
         """Smallest ``expiry`` among option legs. Raises ``ValueError`` if no option legs."""
-        raise NotImplementedError
+        opts = self.option_legs
+        if not opts:
+            raise ValueError("Position has no option legs")
+        return min(leg.expiry for leg in opts)
 
     def describe(self) -> str:
         """Multi-line human-readable summary: label, each leg, net debit/credit."""
-        raise NotImplementedError
+        lines: list[str] = []
+        if self.label:
+            lines.append(self.label)
+        for leg in self.legs:
+            if isinstance(leg, OptionLeg):
+                side = "long" if leg.quantity > 0 else "short"
+                lines.append(
+                    f"  {side} {abs(leg.quantity)}x {leg.kind} "
+                    f"{leg.strike:g} @ {leg.premium:g} "
+                    f"({leg.expiry * 365:.0f} DTE)"
+                )
+            else:
+                side = "long" if leg.quantity > 0 else "short"
+                lines.append(
+                    f"  {side} {abs(leg.quantity)} shares @ {leg.entry_price:g}"
+                )
+        net = self.net_premium()
+        if net > 0:
+            lines.append(f"  net debit ${net:.2f}")
+        elif net < 0:
+            lines.append(f"  net credit ${-net:.2f}")
+        else:
+            lines.append("  net $0.00")
+        return "\n".join(lines)
