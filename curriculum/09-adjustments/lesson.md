@@ -155,6 +155,19 @@ The key mental model: `position_greeks` gives you the current dollar delta; a he
 offsets it to your target. Recheck greeks after every adjustment — that is the discipline this module
 drills.
 
+### The cost of over-adjusting
+
+There is an opposite failure mode to freezing: **over-adjusting**. Every roll, hedge, and repair
+crosses a bid/ask, pays a commission, and adds a decision that can be wrong. A trader who tinkers
+with a position on every wiggle bleeds edge through friction and, worse, keeps *converting small
+defined losses into larger, more complex ones* by refusing to accept a plan-sized loss. Adjustments
+are not free optionality; each one should clear a bar: the thesis is intact, the change is a credit
+(or a deliberate cap), and it measurably improves `max_loss`, greeks, or POP. If an adjustment only
+makes you *feel* more in control without improving the numbers, it is noise — do nothing, or close.
+The best premium sellers adjust *rarely*: they size correctly, set a management point, take winners
+at the target, and take the occasional planned loss without a fight. Defense is a scalpel, not a
+nervous habit.
+
 ---
 
 ## The ~21-DTE decision point and gamma risk

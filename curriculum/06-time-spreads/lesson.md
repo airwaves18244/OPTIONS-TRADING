@@ -67,6 +67,39 @@ your tent. The cleaner "sell the crush" calendar is short the *post-event* eleva
 further out, or simply short a front whose IV is inflated relative to the back with no binary event
 in between. Always know **where the earnings date sits relative to both expiries.**
 
+You can see term structure directly in the DEMO chain. At the 100 strike, the 21-DTE call carries IV
+0.2658 while the 45-DTE carries 0.2621 — the near month is *richer* than the far, a mild inversion.
+That small backwardation is exactly the tailwind a long calendar wants: you are selling the
+0.2658 front and buying the 0.2621 back, collecting the relatively expensive near-term vol. Contrast
+that with a name in steep contango (front much cheaper than back) — there a calendar is paying up for
+the wrong side of the curve, and you would want a diagonal or a different structure instead. Reading
+the front-vs-back IV before you build the calendar is not optional; it is the difference between a
+tailwind and a headwind.
+
+### The vol-crush trap (and why calendars are two-sided vol bets)
+
+Because a calendar is net long vega, it *wants* vol — but it is not immune to a crush. The nuance is
+*which* leg the crush hits. A calendar profits when the **front** IV falls faster than the **back**
+(the front decays and, post-event, crushes hard while the longer-dated back holds its value). It
+*loses* on a **broad, parallel vol collapse** that drags the back leg down too, because you own more
+vega in the back. So the ideal setup is a *term-structure* trade — inverted or steep front-month vol
+that normalizes — not a bet on the whole vol surface rising. This is why the sample calendar's
+scenario grid across vols (in the notebook) is worth studying: a +3-vol shift helps, but a crush that
+hits both months can turn the tent into a loss even if the stock pins your strike. When you put on a
+calendar, ask: *what specifically do I expect to crush — the front only, or everything?* If it is
+"everything," you do not want a calendar.
+
+### Managing the mixed-expiry clock
+
+One practical wrinkle of mixed expiries: your position's character *changes* as the front leg
+approaches expiry. A calendar that was comfortably delta-neutral and long theta at entry becomes
+increasingly **short gamma** right around the strike in the front leg's final days — the same pin
+dynamic that makes near-expiry short options dangerous. Combined with the fact that the tent's peak
+value occurs *at* front expiry, this means calendars and diagonals are actively-managed trades: you
+harvest most of the value in the days before the front expires and you rarely want to be sitting on
+the front strike into its last session. Set a calendar reminder for the front expiry the day you open
+the trade.
+
 ---
 
 ## Strategy cards
