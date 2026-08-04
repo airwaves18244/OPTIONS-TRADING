@@ -75,13 +75,13 @@ lower span), the **downside carries the defined loss** and the **upside is the r
 100 all puts expire worthless and you keep the credit). Confirm by checking that `pnl_at_expiry` is
 flat and positive for large spots and dips to `max_loss` on the downside.
 
-**6.** Total credit = 1.58 + 1.85 − 0.73 = **1.70** (`$170`). Call-spread width = 110 − 105 = **5**
-(`$500`). Credit rule credit ≥ width: **1.70 < 5 → fails**, so this jade lizard **does have upside
-risk** (max upside loss ≈ width − credit = 5 − 1.70 = 3.30 → `$330`). To eliminate it, either
-**tighten the call spread** to a width ≤ 1.70 (e.g., sell 105 / buy 106.5-ish, but the sample chain
-is in 2.5 increments, so sell 107.5 / buy 110 is still width 2.5 > credit — you would need more
-credit) or **collect more credit** by selling a closer/richer put or a closer call. The teaching
-point: the factory will happily build a lizard that violates the rule; **you** must check it.
+**6.** Total credit = 1.58 + 1.85 − 0.73 = **2.70** (`$270`). Call-spread width = 110 − 105 = **5**
+(`$500`). Credit rule credit ≥ width: **2.70 < 5 → fails**, so this jade lizard **does have upside
+risk** (max upside loss ≈ width − credit = 5 − 2.70 = 2.30 → `$230`). To eliminate it, either
+**tighten the call spread** to a width ≤ 2.70 — e.g., sell 105 / buy 107.5 (width 2.5 ≤ 2.70), which
+eliminates upside risk since the 2.70 credit now covers the 2.5 max loss on the call spread — or
+**collect more credit** by selling a closer/richer put or a closer call. The teaching point: the
+factory will happily build a lizard that violates the rule; **you** must check it in the analyzer.
 
 **7.** A **jade lizard**: high IV rank favors net premium selling, neutral-to-bullish fits, you are
 happy to own at 95 (the short put strike), and "never worry about a rally" is exactly the

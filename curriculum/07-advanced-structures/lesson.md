@@ -176,7 +176,7 @@ wrong place). Thinking "credit = free money" and ignoring the defined loss on th
 (`jade_lizard(short_put, short_call, long_call)`), with put strike < short call strike < long call
 strike. **Credit rule:** total credit collected should **exceed the call-spread width** so upside
 risk is zero. DEMO example: short 95 put (45 DTE, 1.58), short 105 call (1.85), long 110 call (0.73)
-→ credit = 1.58 + 1.85 − 0.73 = 1.70; call-spread width = 5. Here 1.70 < 5, so **this one still has
+→ credit = 1.58 + 1.85 − 0.73 = 2.70; call-spread width = 5. Here 2.70 < 5, so **this one still has
 upside risk** — you would tighten the call spread or widen the credit to satisfy the rule.
 
 **Payoff & greeks profile.** Flat profit (the full credit) across a wide upper range **if the credit
