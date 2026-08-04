@@ -183,7 +183,40 @@ carrying a hidden directional or vol bet you did not mean to take.
 
 ---
 
-## 8. How the greeks move with moneyness, time, and vol — a summary map
+## 8. P&L attribution: reading a day through the greeks
+
+The greeks are not just a pre-trade profile; they are a **language for explaining what happened**.
+At the end of any trading day you can decompose your position's P&L into the pieces each greek
+contributed — this is *P&L attribution*, and doing it (even roughly, in your head) is how you learn
+to see which risk actually paid or hurt you.
+
+The first-order approximation is a Taylor expansion of the position value:
+
+```
+ΔP&L ≈ delta × Δspot + ½ × gamma × (Δspot)² + theta × Δdays + vega × ΔIV
+```
+
+Work a concrete DEMO example. You are long one 100 call (per-share greeks: delta ≈ 0.53, gamma ≈
+0.045, theta ≈ −0.03, vega ≈ 0.13). Overnight the stock rises **+2.00**, one day passes, and IV
+*falls* one point (−0.01). Per share:
+
+- **delta** contributes 0.53 × 2.00 = **+1.06** — the bulk of the gain, from direction.
+- **gamma** contributes ½ × 0.045 × 2.00² = **+0.09** — the bonus from delta growing as you went
+  ITM (positive gamma helping a long).
+- **theta** contributes −0.03 × 1 = **−0.03** — one day's rent.
+- **vega** contributes 0.13 × (−1) = **−0.13** — the vol dip nicked you (you're long vega).
+
+Sum ≈ **+0.99/share**, or ~+$99 on the contract. Notice the story the numbers tell: you made money
+*because you were right on direction*, gamma sweetened it, and a small vol slip plus a day of decay
+shaved a little off. Had IV instead *dropped five points* (−0.05), the vega term becomes −0.65 and
+your gain shrinks to ~+$0.34 — the "right on direction, hurt by vol" outcome, quantified. This is
+exactly the decomposition the module-02 vol-crush warning is about, and it is why professionals
+never say "I made money because the stock went up" without checking whether vega and theta were
+tailwinds or headwinds. The notebook lets you re-price the position exactly and compare the true
+P&L to this greek-based estimate — they agree closely for small moves and diverge for large ones
+(where higher-order terms matter, which is precisely what gamma is warning you about).
+
+## 9. How the greeks move with moneyness, time, and vol — a summary map
 
 Commit this table to memory; it is the mental model the rest of the curriculum assumes.
 

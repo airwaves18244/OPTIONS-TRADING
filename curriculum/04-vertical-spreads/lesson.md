@@ -224,6 +224,30 @@ max profit across short strikes so you can *see* the frontier and pick your poin
 
 ---
 
+## POP is not edge: the expectancy check
+
+One more thing before you fall in love with high-probability credit spreads. A **70% POP does not
+mean the trade is good** — it means you win 70% of the time. Whether that is *profitable* depends on
+how much you win versus how much you lose. The number that matters is **expectancy**:
+
+```
+expectancy ≈ (POP × average win) − ((1 − POP) × average loss)
+```
+
+Take the DEMO bull put spread: POP ≈ 70%, but you risk **$404** to make **$96**. Plug in the raw
+max values as a rough bound: (0.70 × 96) − (0.30 × 404) = 67.2 − 121.2 = **−$54**. On those crude
+numbers the trade *loses* money over time — the fat loss on the 30% of misses swamps the thin wins.
+This is the trap of naked high-POP selling: the market prices POP and payoff against each other
+(the frontier you just saw), so a high win rate is *paid for* with a punishing loss ratio.
+
+What rescues the credit spread is **management, not the entry odds.** Taking profit at **50%** cuts
+the average win's *time and risk* (raising annualized expectancy and win consistency), and a loss
+trigger at **~2× credit** caps the average loss well below the theoretical max — turning that −$54
+back positive in practice. The lesson to carry into module 05: *never* judge a premium-selling trade
+by POP alone. Always ask "what do I win, what do I lose, and how will I manage each?" A 70% POP with
+an unmanaged 4:1 loss ratio is a slow-motion account bleed; the same trade managed at 50%/2× is a
+sound, repeatable edge.
+
 ## Key takeaways
 
 - A vertical is **long one strike, short another, same kind and expiry** — it **defines risk and
