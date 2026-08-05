@@ -1,3 +1,5 @@
+*[English](README.md) · [Русский](README.ru.md)*
+
 # OPTIONS-TRADING — Curriculum + Strategy Lab
 
 A complete, self-paced system for learning options trading, paired with **`optionslab`** — a
@@ -14,6 +16,7 @@ and the tool is the foundation for the future strategy builder/analyzer applicat
 | [`SPEC.md`](SPEC.md) | Specification of the `optionslab` tool (v1 library, and future v2–v4 phases) |
 | [`TODO.md`](TODO.md) | Master progress tracker for curriculum and tool |
 | [`curriculum/`](curriculum/) | 12 modules, simple → complex. Each has `lesson.md`, `notebook.ipynb`, `exercises.md` |
+| [`curriculum-ru/`](curriculum-ru/) | Russian translation of the same 12 modules (код и API не переведены) |
 | [`src/optionslab/`](src/optionslab/) | The Python library: pricing, greeks, positions, strategies, analyzer, plots |
 | [`data/samples/`](data/samples/) | Offline sample option chains so every notebook runs without internet |
 | [`tests/`](tests/) | Pytest suite — the acceptance criteria for the library |
