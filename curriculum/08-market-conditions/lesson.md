@@ -18,7 +18,12 @@ structure. That skill is exit gate 3, and it is the whole point of everything be
 Where do you think the underlying goes over your horizon: **bullish**, **bearish**, or **neutral**
 (range-bound, no strong lean)? Be honest about *conviction*, too: "mildly bullish, could stall" is a
 different cell from "convinced it breaks out." Conviction sets how directional (how much delta) you
-want and whether you prefer a debit bet or a premium-collecting range trade around your bias.
+want and whether you prefer a debit bet or a premium-collecting range trade around your bias. A
+high-conviction bull buys a call or a debit spread and wants delta; a low-conviction, "grinds higher
+or chops" bull is often better served *selling* a put spread below the market — you profit if the
+stock rises, stalls, or even drifts down modestly, a far wider win zone than an outright directional
+bet. The direction axis is therefore two questions: which way, and *how sure* — and the second one
+frequently moves you from buying direction to selling premium around it.
 
 ### Axis 2 — IV level (the pivot)
 
@@ -35,6 +40,17 @@ history*. It decides whether you should be a **net buyer** or **net seller** of 
 
 The mantra: **sell high IV, buy low IV.** Fighting this — buying options when they are expensive,
 selling when they are cheap — is the uphill battle module 03 warned about.
+
+Two refinements keep this axis honest. First, **IV rank is relative to the underlying's own
+history**, not to other stocks: a biotech at 55% IV can be *cheap* (rank 20) while a utility at 18%
+is *rich* (rank 80). Never eyeball the absolute IV number and call it high or low — pull the rank.
+Second, IV rank tells you *which side* to be on, but it does not by itself tell you the trade will
+work: a high IV rank often reflects real, elevated risk (an event, a downtrend), and selling into it
+still loses if the feared move happens. IV rank sets your *posture* (buyer vs seller); the direction
+and regime axes decide whether you should have a position at all. A useful discipline: pair the IV
+read with the **expected move** (`analyzer.expected_move` — roughly `spot × IV × sqrt(t)`). If the
+market's priced move comfortably contains your break-evens, a premium sale has room; if your
+structure's break-evens sit *inside* one expected move, you are being paid too little for the risk.
 
 ### Axis 3 — Horizon (and events)
 
@@ -104,6 +120,14 @@ The matrix narrows you to two or three candidates; these decide the winner.
   downside and makes call-side credit thinner — factor it when the matrix offers a put-side vs
   call-side choice.
 
+These tie-breakers are not a tiebreak of last resort — they routinely *override* the "textbook best"
+structure. A theoretically ideal short strangle in an account that cannot margin undefined risk is
+simply not available; a beautiful four-leg condor in an illiquid name loses to a two-leg spread in a
+liquid one; a jade lizard is the wrong trade for someone who cannot stomach owning the stock on a
+drop. Run the axes to get candidates, then run the tie-breakers *as hard filters* — anything that
+fails liquidity, exceeds your buying power, or commits you to an outcome you cannot accept is off the
+table regardless of how good the payoff diagram looks.
+
 ---
 
 ## Regimes: which matrix are you even in?
@@ -115,7 +139,12 @@ average), mean-reversion range trades — condors, short strangles — get run o
 *directional* or *trend-following* structures (debit spreads with the trend, diagonals, PMCCs,
 put-credit spreads under an uptrend). In a **ranging** market (price oscillating between support and
 resistance, no slope), the neutral premium-sellers shine: sell the range's edges. Misclassifying a
-trend as a range is how condor sellers get hurt.
+trend as a range is how condor sellers get hurt — a trend looks like a series of "it's overbought,
+it'll revert" signals right up until it takes out your short strike. Practical tells: is price above
+or below a rising/falling medium-term average? Are pullbacks getting bought (uptrend) or rallies
+sold (downtrend)? Is the range's width stable, or expanding? When in doubt, treat a market as
+trending until it proves it is ranging — the cost of fading a real trend is larger than the cost of
+missing a chop.
 
 **Volatility regime.** Beyond a single name's IV rank, the broad vol environment (think of a VIX-like
 gauge) sets the backdrop. In a **low-vol, calm regime**, premium is thin and mean-reversion works;
@@ -140,6 +169,44 @@ crush/gap dynamics that decide whether a given expiry is a gift or a trap.
 7. **Pre-trade check (the notebook):** build the finalists, compare `summarize` +
    `viz.plot_compare`, confirm max loss, POP, breakevens, and greeks match the view. Trade the one
    whose numbers best fit — and write down the entry, target, and adjustment plan *before* sending.
+
+---
+
+## A worked example (the workflow end to end)
+
+Suppose HIGHVOL (spot 62) has just finished a scary week: it sold off, then stabilized, and IV rank
+is now ~78. You have no strong directional view — it feels like it will chop for a few weeks — and no
+earnings are scheduled inside a month. Walk the steps.
+
+1. **Regime:** the sharp sell-off then stall reads *ranging after a shock*, not a fresh trend. Vol
+   regime is *stressed* (IV rank 78), so moves can still be large — a flag to size down and widen.
+2. **Direction:** neutral, low conviction. That points at the neutral row.
+3. **IV level:** IV rank 78 is high → **sell premium**, the high-IV column.
+4. **Horizon:** ~30 days, no event → 30 DTE cycle.
+5. **Matrix cell (neutral × high IV):** iron condor, iron butterfly, short strangle.
+6. **Tie-breakers:** stressed vol + "moves can be large" argues *against* the naked short strangle
+   (undefined risk when the tape is violent) and *against* a tight iron butterfly (pin bet into
+   chop). The **iron condor** — defined risk, wide profit zone, shorts near the range edges — fits;
+   widen the wings a touch for the stressed regime and size to 1–2% max loss.
+7. **Pre-trade check:** build the condor and a wider-winged alternative, compare `summarize`
+   (credit, POP, max loss, breakevens) and overlay with `viz.plot_compare`, confirm the break-evens
+   sit *outside* one expected move, then write the plan (50% profit target, 21-DTE decision, roll the
+   untested side if tested) before sending.
+
+Notice that the matrix did most of the work in two reads (neutral, high IV), and the *regime*
+(stressed vol) and *tie-breakers* (defined risk, account size) turned three candidates into one. That
+is the whole method: narrow fast with the axes, then let the practical constraints break the tie.
+
+## A note on horizon, expected move, and being paid enough
+
+The horizon axis is not just "pick a DTE." It sets how much *time value* you are buying or selling and
+how the trade decays. A premium seller wants enough DTE that theta is meaningful (30–45) but not so
+much that capital is tied up for a thin annualized return; a premium buyer wants enough time for the
+thesis without paying for time the move will not need. Tie it back to the **expected move**: at 30
+DTE, HIGHVOL's 1σ move is `62 × 0.55 × sqrt(30/365) ≈ ±$9.8`. A condor whose short strikes sit inside
+that ±$9.8 band is likely to be tested; strikes near or beyond it (the ~16Δ neighborhood) give the
+range room. The horizon and IV together *define the width you must respect* — ignore the expected
+move and you will keep selling ranges the market has already told you are too narrow.
 
 ---
 

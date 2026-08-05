@@ -44,6 +44,12 @@ Check items off as you go; this file is yours to edit.
 - [x] Curriculum modules 00–11 (lesson + notebook + exercises each)
 - [x] All tests green; all notebooks execute offline
 
+### Russian edition (`curriculum-ru/`)
+- [x] Modules 00–11 translated (lesson + notebook + exercises each)
+- [x] `ROADMAP.ru.md`, `README.ru.md`, language switcher in `README.md`
+- [x] All 12 Russian notebooks execute offline; executable code verified
+      identical to the English originals (only prose/comments/labels differ)
+
 ### v2 — Live chains & screener (next project — see SPEC.md)
 - [ ] `fetch_chain` hardened against real yfinance data
 - [ ] IV rank / percentile from price history

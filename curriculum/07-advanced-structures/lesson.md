@@ -77,6 +77,21 @@ upside risk. If a plain vertical or condor captures your view at a tighter total
 simpler thing.** The exotic is not more sophisticated for its own sake — it is a tool for a specific
 asymmetry.
 
+### Margin, sizing, and the naked-leg reality
+
+Two of these structures carry an *undefined* leg — the ratio spread's extra short and the jade
+lizard's short put — and that changes how you size and margin them. A defined-risk BWB or a
+credit-rule-satisfying jade lizard can be sized by `analyzer.max_loss` like any spread. But a ratio
+spread's `max_loss` is `±inf`, and a broker will hold **naked-option margin** on the uncovered leg
+(a percentage of notional that *grows* as the position moves against you). You cannot size an
+undefined-risk structure with the simple fixed-% formula; instead you size it by a **stress
+scenario** — "what do I lose if the underlying gaps two expected moves into my naked side?" — and you
+only trade it in an account that can margin it and a temperament that can manage it. The jade lizard
+is the friendliest of the group here: its only real risk is the short put's downside, identical to a
+cash-secured put, so if you would sell that put anyway, the added call spread is "free" income once
+the credit rule holds. The lesson: the payoff diagram is only half the picture — always check what
+the *broker* thinks the risk is, because that is the capital you actually commit.
+
 ---
 
 ## Strategy cards
@@ -176,7 +191,7 @@ wrong place). Thinking "credit = free money" and ignoring the defined loss on th
 (`jade_lizard(short_put, short_call, long_call)`), with put strike < short call strike < long call
 strike. **Credit rule:** total credit collected should **exceed the call-spread width** so upside
 risk is zero. DEMO example: short 95 put (45 DTE, 1.58), short 105 call (1.85), long 110 call (0.73)
-→ credit = 1.58 + 1.85 − 0.73 = 1.70; call-spread width = 5. Here 1.70 < 5, so **this one still has
+→ credit = 1.58 + 1.85 − 0.73 = 2.70; call-spread width = 5. Here 2.70 < 5, so **this one still has
 upside risk** — you would tighten the call spread or widen the credit to satisfy the rule.
 
 **Payoff & greeks profile.** Flat profit (the full credit) across a wide upper range **if the credit

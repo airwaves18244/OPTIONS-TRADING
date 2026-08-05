@@ -124,6 +124,14 @@ in. Term structure matters because **calendar and diagonal spreads (module 06) a
 structure**: you sell the richer front-month vol and buy the cheaper back-month, wanting the shape
 to normalize. Reading term structure tells you *which expiration* to sell and which to own.
 
+If you want a real-world anchor, the **VIX** — the market's headline "fear gauge" — is exactly a
+30-day implied volatility reading on the S&P 500, and the VIX *futures* curve is a tradeable vol
+term structure. In calm markets that curve is in **contango** (longer-dated VIX futures priced
+above spot VIX); in a panic it snaps into steep **backwardation** as near-term fear spikes. The
+same two shapes, the same logic, that you see in a single stock's chain. When you read a term
+structure you are reading the market's *time profile of uncertainty* — where it thinks the danger
+is, and when it expects calm to return.
+
 ---
 
 ## 5. Event vol and the crush
@@ -158,7 +166,32 @@ event trading is a module-08 topic; not getting blindsided is a today topic.
 
 ---
 
-## 6. IV as THE strategy-selection input
+## 6. The volatility risk premium: why selling vol tends to pay (and its catch)
+
+There is a structural reason premium-selling strategies (modules 03–05) get so much attention: on
+average, across markets and time, **implied volatility trades slightly above the volatility that
+actually gets realized.** This gap is the **volatility risk premium (VRP)**. Option buyers, in
+aggregate, pay a little more for protection and lottery-tickets than the movement later justifies;
+option sellers, in aggregate, collect that little extra. It is the same reason insurance companies
+are profitable — people rationally overpay to offload risk they do not want to bear.
+
+Concretely: if DEMO's options imply 25% but the stock repeatedly realizes only ~22%, a
+systematic seller of that 3-point gap earns a small, positive edge over many trades. This is *why*
+the covered calls, cash-secured puts, credit spreads, and iron condors ahead have a genuine
+tailwind — you are not just gambling; you are harvesting a persistent risk premium.
+
+**But name the catch, because it is the whole risk.** The VRP is compensation for taking on
+**tail risk.** The seller wins small, frequently, and loses big, rarely — the payoff is negatively
+skewed. Most months the stock stays calm and you keep the premium; then a crash comes, realized
+vol blows *through* the implied, and the short-vol position gives back many months of gains at
+once. "Picking up pennies in front of a steamroller" is the cliché, and it is earned. The VRP is
+real, but it is not free money — it is a premium *for insuring other people against disasters*, and
+disasters happen. Everything about risk management in modules 04–05 and 10 (defined risk, position
+sizing, the 50%-profit rule, exiting before expiry gamma) exists to make sure the rare big loss
+does not exceed the accumulated small wins. The VRP tilts the odds in the seller's favor; discipline
+is what keeps the tail from bankrupting you anyway.
+
+## 7. IV as THE strategy-selection input
 
 Everything above collapses into one pre-trade habit. Before you pick *any* structure, you locate
 yourself on two axes: **direction** (bullish / bearish / neutral) and **IV level** (high / low, in
